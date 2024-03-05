@@ -148,6 +148,9 @@ def _get_image(
     if channel is not None:
         im_arr = im_arr[:, :, int(channel)]
 
+    # Return the image
+    return im_arr
+
 
 def assert_has_image_mean_intensity(
     output_bytes: bytes,
