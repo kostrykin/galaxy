@@ -2251,7 +2251,8 @@ module.
       <xs:element name="has_image_width" type="AssertHasImageWidth" />
       <xs:element name="has_image_height" type="AssertHasImageHeight" />
       <xs:element name="has_image_channels" type="AssertHasImageChannels" />
-      <xs:element name="image_has_intensities" type="AssertImageHasIntensities" />
+      <xs:element name="has_image_mean_intensity" type="AssertHasImageMeanIntensity" />
+      <xs:element name="has_image_center_of_mass" type="AssertHasImageCenterOfMass" />
       <xs:element name="image_has_labels" type="AssertImageHasLabels" />
     </xs:choice>
   </xs:group>
@@ -2757,7 +2758,7 @@ $attribute_list::5
     <xs:annotation>
       <xs:documentation xml:lang="en"><![CDATA[
 Asserts the output is an image and has a specific width (in pixels) of ``value``
-plus/minus ``delta``, e.g. ``<has_image_width value="512" delta="2" />``.
+plus/minus ``delta`` (e.g., ``<has_image_width value="512" delta="2" />``).
 Alternatively the range of the expected width can be specified by ``min`` and/or ``max``.
 
 $attribute_list::5
@@ -2790,7 +2791,7 @@ $attribute_list::5
     <xs:annotation>
       <xs:documentation xml:lang="en"><![CDATA[
 Asserts the output is an image and has a specific height (in pixels) of ``value``
-plus/minus ``delta``, e.g. ``<has_image_height value="512" delta="2" />``.
+plus/minus ``delta`` (e.g., ``<has_image_height value="512" delta="2" />``).
 Alternatively the range of the expected height can be specified by ``min`` and/or ``max``.
 
 $attribute_list::5
@@ -2823,7 +2824,7 @@ $attribute_list::5
     <xs:annotation>
       <xs:documentation xml:lang="en"><![CDATA[
 Asserts the output is an image and has a specific number of channels of ``value``
-plus/minus ``delta``, e.g. ``<has_image_height value="512" delta="2" />``.
+plus/minus ``delta`` (e.g., ``<has_image_height value="512" delta="2" />``).
 Alternatively the range of the expected number of channels can be specified by ``min`` and/or ``max``.
 
 $attribute_list::5
@@ -2852,47 +2853,66 @@ $attribute_list::5
     </xs:attribute>
     <xs:attributeGroup ref="AssertAttributeNegate"/>
   </xs:complexType>
-  <xs:complexType name="AssertImageHasIntensities">
+  <xs:complexType name="AssertHasImageMeanIntensity">
     <xs:annotation>
       <xs:documentation xml:lang="en"><![CDATA[
-Asserts the image intensities comply with the specified constraints.
-
-```xml
-<image_has_intensities mean_intensity="0.83" center_of_mass="511.07, 223.34" eps="0.01" />
-```
+Asserts the output is an image and has a specific mean intensity value of ``value``
+plus/minus ``delta`` (e.g., ``<image_has_mean_intensity value="0.83" />``).
+Alternatively the range of the expected mean intensity value can be specified by ``min`` and/or ``max``.
 
 $attribute_list::5
 ]]>
       </xs:documentation>
     </xs:annotation>
-    <xs:attribute name="mean_intensity" type="xs:float" use="optional">
+    <xs:attribute name="value" type="xs:float" use="optional">
       <xs:annotation>
         <xs:documentation xml:lang="en">The required mean value of the image intensities.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="mean_intensity_min" type="xs:float" use="optional">
+    <xs:attribute name="delta" type="xs:float" use="optional" default="0.01">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">The absolute tolerance to be used for ``value`` (defaults to ``0.01``). The observed mean value of the image intensities has to be in the range ``value +- delta``.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="min" type="xs:float" use="optional">
       <xs:annotation>
         <xs:documentation xml:lang="en">A lower bound of the required mean value of the image intensities.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="mean_intensity_max" type="xs:float" use="optional">
+    <xs:attribute name="max" type="xs:float" use="optional">
       <xs:annotation>
         <xs:documentation xml:lang="en">An upper bound of the required mean value of the image intensities.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="center_of_mass" type="xs:string" use="optional">
+    <xs:attribute name="channel" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Restricts the assertion to a specific channel of the image (where ``0`` corresponds to the first image channel).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="AssertHasImageCenterOfMass">
+    <xs:annotation>
+      <xs:documentation xml:lang="en"><![CDATA[
+Asserts the output is an image and has a specific center of mass of ``point``,
+or has an Euclidean distance of ``delta`` or less to that point (e.g.,
+``<has_image_center_of_mass point="511.07, 223.34" />``).
+
+$attribute_list::5
+]]>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="point" type="xs:string" use="optional">
       <xs:annotation>
         <xs:documentation xml:lang="en">The required center of mass of the image intensities (horizontal and vertical coordinate, separated by a comma).</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="eps" type="xs:float" use="optional" default="0.01">
+    <xs:attribute name="delta" type="xs:float" use="optional" default="0.01">
       <xs:annotation>
-        <xs:documentation xml:lang="en">The absolute tolerance to be used for the ``mean_intensity`` and ``center_of_mass`` assertions (defaults to ``0.01``).</xs:documentation>
+        <xs:documentation xml:lang="en">The maximum allowed Euclidean distance to the required center of mass (defaults to ``0.01``).</xs:documentation>
       </xs:annotation>
-    </xs:attribute>
     <xs:attribute name="channel" type="xs:integer" use="optional">
       <xs:annotation>
-        <xs:documentation xml:lang="en">Restricts the ``mean_intensity``, ``mean_intensity_min``, ``mean_intensity_max``, and ``center_of_mass`` assertions to a specific channel of the image (where the value ``0`` corresponds to the first image channel).</xs:documentation>
+        <xs:documentation xml:lang="en">Restricts the assertion to a specific channel of the image (where ``0`` corresponds to the first image channel).</xs:documentation>
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>

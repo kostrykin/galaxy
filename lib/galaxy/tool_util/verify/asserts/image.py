@@ -55,8 +55,7 @@ def assert_has_image_width(
     negate: Union[bool, str] = False,
 ) -> None:
     """
-    Asserts the specified output is an image and has a width of the specified value,
-    allowing for absolute (delta) and relative (delta_frac) difference.
+    Asserts the specified output is an image and has a width of the specified value.
     """
     buf = io.BytesIO(output_bytes)
     with Image.open(buf) as im:
@@ -81,8 +80,7 @@ def assert_has_image_height(
     negate: Union[bool, str] = False,
 ) -> None:
     """
-    Asserts the specified output is an image and has a height of the specified value,
-    allowing for absolute (delta) and relative (delta_frac) difference.
+    Asserts the specified output is an image and has a height of the specified value.
     """
     buf = io.BytesIO(output_bytes)
     with Image.open(buf) as im:
@@ -107,8 +105,7 @@ def assert_has_image_channels(
     negate: Union[bool, str] = False,
 ) -> None:
     """
-    Asserts the specified output is an image and has the specified number of channels,
-    allowing for absolute (delta) and relative (delta_frac) difference.
+    Asserts the specified output is an image and has the specified number of channels.
     """
     buf = io.BytesIO(output_bytes)
     with Image.open(buf) as im:
@@ -135,18 +132,14 @@ def _compute_center_of_mass(im_arr: "numpy.typing.NDArray") -> Tuple[float, floa
     return (im_arr * xx).sum(), (im_arr * yy).sum()
 
 
-def assert_image_has_intensities(
+def _get_image(
     output_bytes: bytes,
     channel: Optional[Union[int, str]] = None,
-    mean_intensity: Optional[Union[float, str]] = None,
-    mean_intensity_min: Optional[Union[float, str]] = None,
-    mean_intensity_max: Optional[Union[float, str]] = None,
-    center_of_mass: Optional[Union[Tuple[float, float], str]] = None,
-    eps: Union[float, str] = 0.01,
-) -> None:
+) -> "numpy.typing.NDArray":
     """
-    Assert the image output has specific intensity content.
+    Returns the output image or a specific channel.
     """
+
     buf = io.BytesIO(output_bytes)
     with Image.open(buf) as im:
         im_arr = numpy.array(im)
@@ -155,28 +148,52 @@ def assert_image_has_intensities(
     if channel is not None:
         im_arr = im_arr[:, :, int(channel)]
 
-    # Perform `mean_intensity` assertions.
+
+def assert_has_image_mean_intensity(
+    output_bytes: bytes,
+    channel: Optional[Union[int, str]] = None,
+    value: Optional[Union[float, str]] = None,
+    delta: Union[float, str] = 0.01,
+    min: Optional[Union[float, str]] = None,
+    max: Optional[Union[float, str]] = None,
+) -> None:
+    """
+    Asserts the specified output is an image and has the specified mean intensity value.
+    """
+
+    im_arr = _get_image(output_bytes, channel)
     _assert_float(
         actual=im_arr.mean(),
         label="mean intensity",
-        tolerance=eps,
-        expected=mean_intensity,
-        range_min=mean_intensity_min,
-        range_max=mean_intensity_max,
+        tolerance=delta,
+        expected=value,
+        range_min=min,
+        range_max=max,
     )
 
-    # Perform `center_of_mass` assertion.
-    if center_of_mass is not None:
-        if isinstance(center_of_mass, str):
-            center_of_mass_parts = [c.strip() for c in center_of_mass.split(",")]
-            assert len(center_of_mass_parts) == 2
-            center_of_mass = (float(center_of_mass_parts[0]), float(center_of_mass_parts[1]))
-        assert len(center_of_mass) == 2, "center_of_mass must have two components"
+
+def assert_has_image_center_of_mass(
+    output_bytes: bytes,
+    channel: Optional[Union[int, str]] = None,
+    point: Optional[Union[Tuple[float, float], str]] = None,
+    delta: Union[float, str] = 0.01,
+) -> None:
+    """
+    Asserts the specified output is an image and has the specified center of mass.
+    """
+
+    im_arr = _get_image(output_bytes, channel)
+    if point is not None:
+        if isinstance(point, str):
+            point_parts = [c.strip() for c in point.split(",")]
+            assert len(point_parts) == 2
+            point = (float(point_parts[0]), float(point_parts[1]))
+        assert len(point) == 2, "point must have two components"
         actual_center_of_mass = _compute_center_of_mass(im_arr)
-        distance = numpy.linalg.norm(numpy.subtract(center_of_mass, actual_center_of_mass))
+        distance = numpy.linalg.norm(numpy.subtract(point, actual_center_of_mass))
         assert distance <= float(
-            eps
-        ), f"Wrong center of mass: {actual_center_of_mass} (expected {center_of_mass}, distance: {distance}, eps: {eps})"
+            delta
+        ), f"Wrong center of mass: {actual_center_of_mass} (expected {point}, distance: {distance}, delta: {delta})"
 
 
 def assert_image_has_labels(
