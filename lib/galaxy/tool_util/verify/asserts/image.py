@@ -200,33 +200,43 @@ def assert_has_image_center_of_mass(
 def _get_image_labels(
     output_bytes: bytes,
     channel: Optional[Union[int, str]] = None,
+    labels: Optional[Union[str, List[int]]] = None,
     exclude_labels: Optional[Union[str, List[int]]] = None,
 ) -> Tuple["numpy.typing.NDArray", List[Any]]:
     """
     Determines the unique labels in the output image or a specific channel.
     """
+    assert labels is None or exclude_labels is None
     im_arr = _get_image(output_bytes, channel)
 
+    def cast_label(label):
+        label = label.strip()
+        if numpy.issubdtype(im_arr.dtype, numpy.integer):
+            return int(label)
+        if numpy.issubdtype(im_arr.dtype, float):
+            return float(label)
+        raise AssertionError(f'Unsupported image label type: "{im_arr.dtype}"')
+
     # Determine labels present in the image.
-    labels = numpy.unique(im_arr)
+    present_labels = numpy.unique(im_arr)
+
+    # Apply filtering due to `labels` (keep only those).
+    if labels is None:
+        labels = list()
+    if isinstance(labels, str):
+        labels = [cast_label(label) for label in labels.split(",") if len(label) > 0]
+    if len(labels) > 0:
+        present_labels = [label for label in present_labels if label in labels]
 
     # Apply filtering due to `exclude_labels`.
     if exclude_labels is None:
         exclude_labels = list()
     if isinstance(exclude_labels, str):
-
-        def cast_label(label):
-            if numpy.issubdtype(im_arr.dtype, numpy.integer):
-                return int(label)
-            if numpy.issubdtype(im_arr.dtype, float):
-                return float(label)
-            raise AssertionError(f'Unsupported image label type: "{im_arr.dtype}"')
-
         exclude_labels = [cast_label(label) for label in exclude_labels.split(",") if len(label) > 0]
-    labels = [label for label in labels if label not in exclude_labels]
+    present_labels = [label for label in present_labels if label not in exclude_labels]
 
     # Return the image data and the labels.
-    return im_arr, labels
+    return im_arr, present_labels
 
 
 def assert_has_image_labels(
@@ -242,9 +252,9 @@ def assert_has_image_labels(
     """
     Asserts the specified output is an image and has the specified number of unique values (e.g., uniquely labeled objects).
     """
-    labels = _get_image_labels(output_bytes, channel, exclude_labels)[1]
+    present_labels = _get_image_labels(output_bytes, channel, exclude_labels)[1]
     _assert_number(
-        len(labels),
+        len(present_labels),
         value,
         delta,
         min,
@@ -258,6 +268,7 @@ def assert_has_image_labels(
 def assert_has_image_mean_object_size(
     output_bytes: bytes,
     channel: Optional[Union[int, str]] = None,
+    labels: Optional[Union[str, List[int]]] = None,
     exclude_labels: Optional[Union[str, List[int]]] = None,
     value: Optional[Union[float, str]] = None,
     delta: Union[float, str] = 0.01,
@@ -267,8 +278,8 @@ def assert_has_image_mean_object_size(
     """
     Asserts the specified output is an image with labeled objects which have the specified mean size (number of pixels).
     """
-    im_arr, labels = _get_image_labels(output_bytes, channel, exclude_labels)
-    actual_mean_object_size = sum((im_arr == label).sum() for label in labels) / len(labels)
+    im_arr, present_labels = _get_image_labels(output_bytes, channel, labels, exclude_labels)
+    actual_mean_object_size = sum((im_arr == label).sum() for label in present_labels) / len(present_labels)
     _assert_float(
         actual=actual_mean_object_size,
         label="mean object size",

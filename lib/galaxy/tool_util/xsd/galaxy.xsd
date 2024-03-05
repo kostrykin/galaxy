@@ -2953,9 +2953,14 @@ $attribute_list::5
         <xs:documentation xml:lang="en">Restricts the assertion to a specific channel of the image (where ``0`` corresponds to the first image channel). Must be used with multi-channel imags.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
+    <xs:attribute name="labels" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">List of labels, separated by a comma. Labels *not* on this list will be excluded from consideration. Cannot be used in combination with ``exclude_labels``.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
     <xs:attribute name="exclude_labels" type="xs:string" use="optional">
       <xs:annotation>
-        <xs:documentation xml:lang="en">List of labels to be excluded from consideration, separated by a comma. The primary usage of this attribute is to exclude the background of a label image.</xs:documentation>
+        <xs:documentation xml:lang="en">List of labels to be excluded from consideration, separated by a comma. The primary usage of this attribute is to exclude the background of a label image. Cannot be used in combination with ``labels``.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attributeGroup ref="AssertAttributeNegate"/>
@@ -2995,12 +3000,16 @@ $attribute_list::5
         <xs:documentation xml:lang="en">Restricts the assertion to a specific channel of the image (where ``0`` corresponds to the first image channel). Must be used with multi-channel imags.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="exclude_labels" type="xs:string" use="optional">
+    <xs:attribute name="labels" type="xs:string" use="optional">
       <xs:annotation>
-        <xs:documentation xml:lang="en">List of labels to be excluded from consideration, separated by a comma. The primary usage of this attribute is to exclude the background of a label image.</xs:documentation>
+        <xs:documentation xml:lang="en">List of labels, separated by a comma. Labels *not* on this list will be excluded from consideration. Cannot be used in combination with ``exclude_labels``.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attributeGroup ref="AssertAttributeNegate"/>
+    <xs:attribute name="exclude_labels" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">List of labels to be excluded from consideration, separated by a comma. The primary usage of this attribute is to exclude the background of a label image. Cannot be used in combination with ``labels``.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
   </xs:complexType>
   <xs:complexType name="AssertHasJsonPropertyWithValue">
     <xs:annotation>
