@@ -1,5 +1,6 @@
 import io
 from typing import (
+    Any,
     List,
     Optional,
     Tuple,
@@ -91,8 +92,8 @@ def assert_has_image_height(
             min,
             max,
             negate,
-            "{expected} width {n}+-{delta}",
-            "{expected} width to be in [{min}:{max}]",
+            "{expected} height {n}+-{delta}",
+            "{expected} height to be in [{min}:{max}]",
         )
 
 
@@ -116,8 +117,8 @@ def assert_has_image_channels(
             min,
             max,
             negate,
-            "{expected} width {n}+-{delta}",
-            "{expected} width to be in [{min}:{max}]",
+            "{expected} image channels {n}+-{delta}",
+            "{expected} image channels to be in [{min}:{max}]",
         )
 
 
@@ -139,7 +140,6 @@ def _get_image(
     """
     Returns the output image or a specific channel.
     """
-
     buf = io.BytesIO(output_bytes)
     with Image.open(buf) as im:
         im_arr = numpy.array(im)
@@ -163,7 +163,6 @@ def assert_has_image_mean_intensity(
     """
     Asserts the specified output is an image and has the specified mean intensity value.
     """
-
     im_arr = _get_image(output_bytes, channel)
     _assert_float(
         actual=im_arr.mean(),
@@ -184,7 +183,6 @@ def assert_has_image_center_of_mass(
     """
     Asserts the specified output is an image and has the specified center of mass.
     """
-
     im_arr = _get_image(output_bytes, channel)
     if point is not None:
         if isinstance(point, str):
@@ -199,21 +197,15 @@ def assert_has_image_center_of_mass(
         ), f"Wrong center of mass: {actual_center_of_mass} (expected {point}, distance: {distance}, delta: {delta})"
 
 
-def assert_image_has_labels(
+def _get_image_labels(
     output_bytes: bytes,
-    number_of_objects: Optional[Union[int, str]] = None,
-    mean_object_size: Optional[Union[float, str]] = None,
-    mean_object_size_min: Optional[Union[float, str]] = None,
-    mean_object_size_max: Optional[Union[float, str]] = None,
+    channel: Optional[Union[int, str]] = None,
     exclude_labels: Optional[Union[str, List[int]]] = None,
-    eps: Union[float, str] = 0.01,
-) -> None:
+) -> Tuple["numpy.typing.NDArray", List[Any]]:
     """
-    Assert the image output has specific label content.
+    Determines the unique labels in the output image or a specific channel.
     """
-    buf = io.BytesIO(output_bytes)
-    with Image.open(buf) as im:
-        im_arr = numpy.array(im)
+    im_arr = _get_image(output_bytes, channel)
 
     # Determine labels present in the image.
     labels = numpy.unique(im_arr)
@@ -233,21 +225,55 @@ def assert_image_has_labels(
         exclude_labels = [cast_label(label) for label in exclude_labels.split(",") if len(label) > 0]
     labels = [label for label in labels if label not in exclude_labels]
 
-    # Perform `number_of_objects` assertion.
-    if number_of_objects is not None:
-        actual_number_of_objects = len(labels)
-        expected_number_of_objects = int(number_of_objects)
-        assert (
-            actual_number_of_objects == expected_number_of_objects
-        ), f"Wrong number of objects: {actual_number_of_objects} (expected {expected_number_of_objects})"
+    # Return the image data and the labels.
+    return im_arr, labels
 
-    # Perform `mean_object_size` assertion.
+
+def assert_has_image_labels(
+    output_bytes: bytes,
+    channel: Optional[Union[int, str]] = None,
+    exclude_labels: Optional[Union[str, List[int]]] = None,
+    value: Optional[Union[int, str]] = None,
+    delta: Union[int, str] = 0,
+    min: Optional[Union[int, str]] = None,
+    max: Optional[Union[int, str]] = None,
+    negate: Union[bool, str] = False,
+) -> None:
+    """
+    Asserts the specified output is an image and has the specified number of unique values (e.g., uniquely labeled objects).
+    """
+    labels = _get_image_labels(output_bytes, channel, exclude_labels)[1]
+    _assert_number(
+        len(labels),
+        value,
+        delta,
+        min,
+        max,
+        negate,
+        "{expected} labels {n}+-{delta}",
+        "{expected} labels to be in [{min}:{max}]",
+    )
+
+
+def assert_has_image_mean_object_size(
+    output_bytes: bytes,
+    channel: Optional[Union[int, str]] = None,
+    exclude_labels: Optional[Union[str, List[int]]] = None,
+    value: Optional[Union[float, str]] = None,
+    delta: Union[float, str] = 0.01,
+    min: Optional[Union[float, str]] = None,
+    max: Optional[Union[float, str]] = None,
+) -> None:
+    """
+    Asserts the specified output is an image with labeled objects which have the specified mean size (number of pixels).
+    """
+    im_arr, labels = _get_image_labels(output_bytes, channel, exclude_labels)
     actual_mean_object_size = sum((im_arr == label).sum() for label in labels) / len(labels)
     _assert_float(
         actual=actual_mean_object_size,
         label="mean object size",
-        tolerance=eps,
-        expected=mean_object_size,
-        range_min=mean_object_size_min,
-        range_max=mean_object_size_max,
+        tolerance=delta,
+        expected=value,
+        range_min=min,
+        range_max=max,
     )

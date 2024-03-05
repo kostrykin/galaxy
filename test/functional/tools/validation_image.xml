@@ -85,7 +85,8 @@
                     <has_image_width value="32" />
                     <has_image_height value="32" />
                     <has_image_channels value="1" />
-                    <image_has_labels number_of_objects="1" mean_object_size="256" exclude_labels="0" />
+                    <has_image_labels value="1" exclude_labels="0" />
+                    <has_image_mean_object_size value="256" exclude_labels="0" />
                 </assert_contents>
             </output>
         </test>
@@ -96,7 +97,8 @@
                     <has_image_width value="32" />
                     <has_image_height value="32" />
                     <has_image_channels value="1" />
-                    <image_has_labels number_of_objects="2" mean_object_size="512" />
+                    <has_image_labels value="2" />
+                    <has_image_mean_object_size value="512" />
                 </assert_contents>
             </output>
         </test>
@@ -104,7 +106,7 @@
             <param name="input" value="im2_b.png" />
             <output name="output">
                 <assert_contents>
-                    <image_has_labels mean_object_size="511" eps="0.9" />
+                    <has_image_mean_object_size value="511" delta="0.9" />
                 </assert_contents>
             </output>
         </test>
@@ -115,7 +117,8 @@
                     <has_image_width value="32" />
                     <has_image_height value="32" />
                     <has_image_channels value="1" />
-                    <image_has_labels number_of_objects="2" mean_object_size="511" eps="1.0" />
+                    <has_image_labels value="2" />
+                    <has_image_mean_object_size value="511" delta="1.0" />
                 </assert_contents>
             </output>
         </test>
@@ -123,7 +126,7 @@
             <param name="input" value="im2_b.png" />
             <output name="output">
                 <assert_contents>
-                    <image_has_labels mean_object_size_min="511" mean_object_size_max="513" />
+                    <has_image_mean_object_size min="511" max="513" />
                 </assert_contents>
             </output>
         </test>
@@ -131,7 +134,7 @@
             <param name="input" value="im2_b.png" />
             <output name="output">
                 <assert_contents>
-                    <image_has_labels mean_object_size_max="511" />
+                    <has_image_mean_object_size max="511" />
                 </assert_contents>
             </output>
         </test>
@@ -139,7 +142,7 @@
             <param name="input" value="im2_b.png" />
             <output name="output">
                 <assert_contents>
-                    <image_has_labels mean_object_size_min="513" />
+                    <has_image_mean_object_size min="513" />
                 </assert_contents>
             </output>
         </test>
