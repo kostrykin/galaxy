@@ -2248,7 +2248,9 @@ module.
       <xs:documentation xml:lang="en"><![CDATA[Assertions for image data]]></xs:documentation>
     </xs:annotation>
     <xs:choice>
-      <xs:element name="image_has_metadata" type="AssertImageHasMetadata" />
+      <xs:element name="has_image_width" type="AssertHasImageWidth" />
+      <xs:element name="has_image_height" type="AssertHasImageHeight" />
+      <xs:element name="has_image_channels" type="AssertHasImageChannels" />
       <xs:element name="image_has_intensities" type="AssertImageHasIntensities" />
       <xs:element name="image_has_labels" type="AssertImageHasLabels" />
     </xs:choice>
@@ -2751,34 +2753,104 @@ $attribute_list::5
     <xs:attributeGroup ref="AssertAttributePath"/>
     <xs:attributeGroup ref="AssertAttributeNegate"/>
   </xs:complexType>
-  <xs:complexType name="AssertImageHasMetadata">
+  <xs:complexType name="AssertHasImageWidth">
     <xs:annotation>
       <xs:documentation xml:lang="en"><![CDATA[
-Asserts the image has the specified metadata.
-
-```xml
-<image_has_metadata width="512" height="512" channels="3" />
-```
+Asserts the output is an image and has a specific width (in pixels) of ``value``
+plus/minus ``delta``, e.g. ``<has_image_width value="512" delta="2" />``.
+Alternatively the range of the expected width can be specified by ``min`` and/or ``max``.
 
 $attribute_list::5
 ]]>
       </xs:documentation>
     </xs:annotation>
-    <xs:attribute name="width" type="xs:integer" use="optional">
+    <xs:attribute name="value" type="xs:integer" use="optional">
       <xs:annotation>
-        <xs:documentation xml:lang="en">The required width of the image.</xs:documentation>
+        <xs:documentation xml:lang="en">Expected width of the image (in pixels).`</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="height" type="xs:integer" use="optional">
+    <xs:attribute name="delta" type="xs:integer" use="optional">
       <xs:annotation>
-        <xs:documentation xml:lang="en">The required height of the image.</xs:documentation>
+        <xs:documentation xml:lang="en">Maximum allowed difference of the image width (in pixels, default is 0). The observed width has to be in the range ``value +- delta``.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="channels" type="xs:integer" use="optional">
+    <xs:attribute name="min" type="xs:integer" use="optional">
       <xs:annotation>
-        <xs:documentation xml:lang="en">The required number of channels of the image (e.g., 1 for grayscale, 3 for RGB, 4 for RGBA images).</xs:documentation>
+        <xs:documentation xml:lang="en">Minimum allowed width of the image (in pixels).</xs:documentation>
       </xs:annotation>
     </xs:attribute>
+    <xs:attribute name="max" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Maximum allowed width of the image (in pixels).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="AssertAttributeNegate"/>
+  </xs:complexType>
+  <xs:complexType name="AssertHasImageHeight">
+    <xs:annotation>
+      <xs:documentation xml:lang="en"><![CDATA[
+Asserts the output is an image and has a specific height (in pixels) of ``value``
+plus/minus ``delta``, e.g. ``<has_image_height value="512" delta="2" />``.
+Alternatively the range of the expected height can be specified by ``min`` and/or ``max``.
+
+$attribute_list::5
+]]>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="value" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Expected height of the image (in pixels).`</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="delta" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Maximum allowed difference of the image height (in pixels, default is 0). The observed height has to be in the range ``value +- delta``.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="min" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Minimum allowed height of the image (in pixels).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="max" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Maximum allowed height of the image (in pixels).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="AssertAttributeNegate"/>
+  </xs:complexType>
+  <xs:complexType name="AssertHasImageChannels">
+    <xs:annotation>
+      <xs:documentation xml:lang="en"><![CDATA[
+Asserts the output is an image and has a specific number of channels of ``value``
+plus/minus ``delta``, e.g. ``<has_image_height value="512" delta="2" />``.
+Alternatively the range of the expected number of channels can be specified by ``min`` and/or ``max``.
+
+$attribute_list::5
+]]>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="value" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Expected number of channels of the image.`</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="delta" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Maximum allowed difference of the number of channels (default is 0). The observed number of channels has to be in the range ``value +- delta``.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="min" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Minimum allowed number of channels.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="max" type="xs:integer" use="optional">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">Maximum allowed number of channels.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="AssertAttributeNegate"/>
   </xs:complexType>
   <xs:complexType name="AssertImageHasIntensities">
     <xs:annotation>

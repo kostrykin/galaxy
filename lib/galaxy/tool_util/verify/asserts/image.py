@@ -7,6 +7,8 @@ from typing import (
     Union,
 )
 
+from ._util import _assert_number
+
 try:
     import numpy
 except ImportError:
@@ -44,28 +46,82 @@ def _assert_float(
         assert actual <= float(range_max), f"Wrong {label}: {actual} (must be {range_max} or smaller)"
 
 
-def assert_image_has_metadata(
+def assert_has_image_width(
     output_bytes: bytes,
-    width: Optional[Union[int, str]] = None,
-    height: Optional[Union[int, str]] = None,
-    channels: Optional[Union[int, str]] = None,
+    value: Optional[Union[int, str]] = None,
+    delta: Union[int, str] = 0,
+    min: Optional[Union[int, str]] = None,
+    max: Optional[Union[int, str]] = None,
+    negate: Union[bool, str] = False,
 ) -> None:
     """
-    Assert the image output has specific metadata.
+    Asserts the specified output is an image and has a width of the specified value,
+    allowing for absolute (delta) and relative (delta_frac) difference.
     """
     buf = io.BytesIO(output_bytes)
     with Image.open(buf) as im:
+        _assert_number(
+            im.size[0],
+            value,
+            delta,
+            min,
+            max,
+            negate,
+            "{expected} width {n}+-{delta}",
+            "{expected} width to be in [{min}:{max}]",
+        )
 
-        assert width is None or im.size[0] == int(width), f"Image has wrong width: {im.size[0]} (expected {int(width)})"
 
-        assert height is None or im.size[1] == int(
-            height
-        ), f"Image has wrong height: {im.size[1]} (expected {int(height)})"
+def assert_has_image_height(
+    output_bytes: bytes,
+    value: Optional[Union[int, str]] = None,
+    delta: Union[int, str] = 0,
+    min: Optional[Union[int, str]] = None,
+    max: Optional[Union[int, str]] = None,
+    negate: Union[bool, str] = False,
+) -> None:
+    """
+    Asserts the specified output is an image and has a height of the specified value,
+    allowing for absolute (delta) and relative (delta_frac) difference.
+    """
+    buf = io.BytesIO(output_bytes)
+    with Image.open(buf) as im:
+        _assert_number(
+            im.size[1],
+            value,
+            delta,
+            min,
+            max,
+            negate,
+            "{expected} width {n}+-{delta}",
+            "{expected} width to be in [{min}:{max}]",
+        )
 
-        actual_channels = len(im.getbands())
-        assert channels is None or actual_channels == int(
-            channels
-        ), f"Image has wrong number of channels: {actual_channels} (expected {int(channels)})"
+
+def assert_has_image_channels(
+    output_bytes: bytes,
+    value: Optional[Union[int, str]] = None,
+    delta: Union[int, str] = 0,
+    min: Optional[Union[int, str]] = None,
+    max: Optional[Union[int, str]] = None,
+    negate: Union[bool, str] = False,
+) -> None:
+    """
+    Asserts the specified output is an image and has the specified number of channels,
+    allowing for absolute (delta) and relative (delta_frac) difference.
+    """
+    buf = io.BytesIO(output_bytes)
+    with Image.open(buf) as im:
+        _assert_number(
+            len(im.getbands()),
+            value,
+            delta,
+            min,
+            max,
+            negate,
+            "{expected} width {n}+-{delta}",
+            "{expected} width to be in [{min}:{max}]",
+        )
 
 
 def _compute_center_of_mass(im_arr: "numpy.typing.NDArray") -> Tuple[float, float]:

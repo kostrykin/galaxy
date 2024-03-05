@@ -14,7 +14,9 @@
             <param name="input" value="im1_uint8.tif" />
             <output name="output">
                 <assert_contents>
-                    <image_has_metadata width="32" height="32" channels="1" />
+                    <has_image_width value="32" />
+                    <has_image_height value="32" />
+                    <has_image_channels value="1" />
                     <image_has_intensities center_of_mass="15.61, 15.48" />
                 </assert_contents>
             </output>
@@ -23,7 +25,9 @@
             <param name="input" value="im3_b.tif" />
             <output name="output">
                 <assert_contents>
-                    <image_has_metadata width="32" height="32" channels="3" />
+                    <has_image_width value="32" />
+                    <has_image_height value="32" />
+                    <has_image_channels value="3" />
                     <image_has_intensities channel="0" mean_intensity="0.25" center_of_mass="7.5, 7.5" />
                     <image_has_intensities channel="1" mean_intensity="0.0" />
                     <image_has_intensities channel="2" mean_intensity="0" />
@@ -76,7 +80,9 @@
             <param name="input" value="im2_b.png" />
             <output name="output">
                 <assert_contents>
-                    <image_has_metadata width="32" height="32" channels="1" />
+                    <has_image_width value="32" />
+                    <has_image_height value="32" />
+                    <has_image_channels value="1" />
                     <image_has_labels number_of_objects="1" mean_object_size="256" exclude_labels="0" />
                 </assert_contents>
             </output>
@@ -85,7 +91,9 @@
             <param name="input" value="im2_b.png" />
             <output name="output">
                 <assert_contents>
-                    <image_has_metadata width="32" height="32" channels="1" />
+                    <has_image_width value="32" />
+                    <has_image_height value="32" />
+                    <has_image_channels value="1" />
                     <image_has_labels number_of_objects="2" mean_object_size="512" />
                 </assert_contents>
             </output>
@@ -102,7 +110,9 @@
             <param name="input" value="im2_b.png" />
             <output name="output">
                 <assert_contents>
-                    <image_has_metadata width="32" height="32" channels="1" />
+                    <has_image_width value="32" />
+                    <has_image_height value="32" />
+                    <has_image_channels value="1" />
                     <image_has_labels number_of_objects="2" mean_object_size="511" eps="1.0" />
                 </assert_contents>
             </output>
