@@ -489,7 +489,7 @@ def intersection_over_union(
 ) -> "numpy.floating":
     """Compute the intersection over union (IoU) for the objects in two masks containing lables.
 
-    The data type of the images (masks) must be bool or integer. For integer masks, the IoU is computed for each uniquely labeled image region (object).
+    Generally, the IoU is computed for each uniquely labeled image region (object).
     For each object each mask, the corresponding object in the other mask is determined as the one with the largest IoU value.
     This yields a series of IoU values, one for each object in the two masks. The final IoU value is the overall lowest value obtained.
 
@@ -497,10 +497,9 @@ def intersection_over_union(
     If the label of an object is listed in `pin_labels`, then the corresponding object in the other mask is determined as the object with the same label value.
     This is particularly useful when specific image regions must always be labeled with a designated label value (e.g., the image background is often labeled with 0 or -1).
 
-    For bool masks, the only possible labels `True` and `False` are always assumed to be pinned, and the arugment `pin_labels` is ignored.
+    For masks with bool data type, the only possible labels `True` and `False` are always assumed to be pinned, and the arugment `pin_labels` is ignored.
     """
     assert mask1.dtype == mask2.dtype
-    assert mask1.dtype == bool or numpy.issubdtype(mask1.dtype, numpy.integer), f'Image data type is "{mask1.dtype}" but must be bool or integer.'
     assert mask1.ndim == mask2.ndim == 2
     assert mask1.shape == mask2.shape
     if mask1.dtype == bool:
