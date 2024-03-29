@@ -466,7 +466,6 @@ def _multiobject_intersection_over_union(
 
         # If the label is in `pin_labels`, then use the same label value to find the corresponding object in the second mask.
         if pin_labels is not None and label1 in pin_labels:
-            assert label1 in mask2, f"Label {label1} is supposed to be pinned but missing in one of the images."
             cc2 = mask2 == label1
             iou_list.append(intersection_over_union(cc1, cc2))
 
@@ -502,6 +501,10 @@ def intersection_over_union(
     assert mask1.dtype == mask2.dtype
     assert mask1.ndim == mask2.ndim == 2
     assert mask1.shape == mask2.shape
+    for label in pin_labels:
+        count = sum(label in mask for mask in (mask1, mask2))
+        count_str = {1: 'one', 2: 'both'}
+        assert count == 2, f"Label {label} is pinned but missing in {count_str[2 - count]} of the images."
     if mask1.dtype == bool:
         return numpy.logical_and(mask1, mask2).sum() / numpy.logical_or(mask1, mask2).sum()
     else:
