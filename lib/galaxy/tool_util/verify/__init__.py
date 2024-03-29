@@ -501,7 +501,7 @@ def intersection_over_union(
     assert mask1.dtype == mask2.dtype
     assert mask1.ndim == mask2.ndim == 2
     assert mask1.shape == mask2.shape
-    for label in pin_labels:
+    for label in pin_labels or []:
         count = sum(label in mask for mask in (mask1, mask2))
         count_str = {1: 'one', 2: 'both'}
         assert count == 2, f"Label {label} is pinned but missing in {count_str[2 - count]} of the images."
