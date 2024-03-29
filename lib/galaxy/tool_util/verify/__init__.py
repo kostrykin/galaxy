@@ -458,7 +458,10 @@ def files_contains(file1, file2, attributes=None):
 
 
 def _multiobject_intersection_over_union(
-    mask1: "numpy.typing.NDArray", mask2: "numpy.typing.NDArray", pin_labels: Optional[List[int]] = None, repeat_reverse: bool = True
+    mask1: "numpy.typing.NDArray",
+    mask2: "numpy.typing.NDArray",
+    pin_labels: Optional[List[int]] = None,
+    repeat_reverse: bool = True,
 ) -> List["numpy.floating"]:
     iou_list = []
     for label1 in numpy.unique(mask1):
@@ -503,7 +506,7 @@ def intersection_over_union(
     assert mask1.shape == mask2.shape
     for label in pin_labels or []:
         count = sum(label in mask for mask in (mask1, mask2))
-        count_str = {1: 'one', 2: 'both'}
+        count_str = {1: "one", 2: "both"}
         assert count == 2, f"Label {label} is pinned but missing in {count_str[2 - count]} of the images."
     if mask1.dtype == bool:
         return numpy.logical_and(mask1, mask2).sum() / numpy.logical_or(mask1, mask2).sum()
