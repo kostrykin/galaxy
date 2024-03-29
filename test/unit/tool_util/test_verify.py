@@ -179,7 +179,13 @@ def generate_tests_image_diff():
         (f6, f7, {"metric": "fro", "eps": 100 - 1e-4}, AssertionError),
         (f6, f9, {"metric": "iou", "eps": (1 - 1 / 8) + 1e-4}, None),
         (f6, f9, {"metric": "iou", "eps": (1 - 1 / 8) - 1e-4}, AssertionError),
-        (f6, f9, {"metric": "iou", "eps": (1 - 1 / 8) + 1e-4, "pin_labels": "200"}, AssertionError),
+        # tests `pin_labels` with a label not present in any image
+        # tests `pin_labels` with a label present in both images
+        (f6, f9, {"metric": "iou", "eps": 0.999999, "pin_labels": "200"}, AssertionError),
+        (f6, f9, {"metric": "iou", "eps": 1.0, "pin_labels": "200"}, None),
+        # tests `pin_labels` with a label only present in one image
+        (f6, f9, {"metric": "iou", "eps": 1.0, "pin_labels": "200, 1"}, AssertionError),
+        (f6, f9, {"metric": "iou", "eps": 1.0, "pin_labels": "200, 255"}, AssertionError),
     ]
     return tests
 
