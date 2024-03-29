@@ -79,9 +79,9 @@ F8 = _encode_image(
 F9 = _encode_image(
     numpy.array(
         [
-            [0, 0, 0],
-            [0, 1, 0],
-            [0, 1, 2],
+            [200, 200, 200],
+            [200, 1, 200],
+            [200, 1, 2],
         ],
         dtype=numpy.uint8,
     ),
