@@ -179,6 +179,7 @@ def generate_tests_image_diff():
         (f6, f7, {"metric": "fro", "eps": 100 - 1e-4}, AssertionError),
         (f6, f9, {"metric": "iou", "eps": (1 - 1 / 8) + 1e-4}, None),
         (f6, f9, {"metric": "iou", "eps": (1 - 1 / 8) - 1e-4}, AssertionError),
+        (f6, f9, {"metric": "iou", "eps": (1 - 1 / 8) + 1e-4, "pin_labels": [200]}, AssertionError),
     ]
     return tests
 
