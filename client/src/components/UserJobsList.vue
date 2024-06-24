@@ -1,18 +1,34 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import axios from "axios";
+import { computed, onMounted, ref } from "vue";
 
-const jobs = ref([]);
+import { getAppRoot } from "@/onload/loadConfig";
+
+const jobs = ref<any[]>([]);
 
 const jobCount = computed(() => jobs.value.length);
 
-onMounted(() => {
-	console.log('UserJobsList component is mounted');
+onMounted(async () => {
+	const path = `${getAppRoot()}api/jobs`;
+	try {
+    	const response = await axios.get(path);
+    	console.log(`${response.data.length} jobs loaded.`);
+    	jobs.value = response.data;
+} catch (error) {
+    	console.error(error);
+	}
 });
 </script>
 
 <template>
 	<div>
-    	<h1>User Jobs List</h1>
+    	<h1>Jobs</h1>
     	<p>{{ jobCount }} jobs loaded.</p>
+
+    	<ul>
+        	<li v-for="job in jobs" :key="job.id">
+            	{{ job }}
+        	</li>
+    	</ul>
 	</div>
 </template>
