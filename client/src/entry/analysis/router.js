@@ -82,6 +82,8 @@ import UserDatasetPermissions from "@/components/User/UserDatasetPermissions.vue
 import WorkflowPublished from "@/components/Workflow/Published/WorkflowPublished.vue";
 import WorkflowInvocationState from "@/components/WorkflowInvocationState/WorkflowInvocationState.vue";
 
+import UserJobsList from "@/components/UserJobsList.vue"
+
 Vue.use(VueRouter);
 
 // patches $router.push() to trigger an event and hide duplication warnings
@@ -186,6 +188,11 @@ export function getRouter(Galaxy) {
                         alias: "root",
                         component: Home,
                         props: (route) => ({ config: Galaxy.config, query: route.query }),
+                    },
+                    {
+                        path: "/jobs",
+                        component: UserJobsList,
+                        redirect: redirectLoggedIn(),
                     },
                     {
                         path: "about",
