@@ -24,7 +24,7 @@ def __test(image_cls: Type[Image], input_filename: str):
         def test():
             image = image_cls()
             with get_input_files(input_filename) as input_files:
-                dataset: DatasetProtocol = MockDataset(1)  # type: ignore
+                dataset: DatasetProtocol = MockDataset(1)  # type: ignore[assignment]
                 dataset.set_file_name(input_files[0])
                 image.set_meta(dataset)
                 test_impl(dataset.metadata)
