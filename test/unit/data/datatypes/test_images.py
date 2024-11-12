@@ -8,7 +8,6 @@ from galaxy.datatypes.images import (
     Pdf,
     Tiff,
 )
-from galaxy.datatypes.protocols import DatasetProtocol
 from .util import (
     get_input_files,
     MockDataset,
