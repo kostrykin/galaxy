@@ -3,7 +3,6 @@ Image classes
 """
 
 import base64
-import io
 import json
 import logging
 import math
@@ -39,6 +38,7 @@ from galaxy.datatypes.protocols import (
 )
 from galaxy.datatypes.sniff import (
     build_sniff_from_prefix,
+    disable_parent_class_sniffing,
     FilePrefix,
 )
 from galaxy.datatypes.text import Html as HtmlFromText
@@ -411,12 +411,13 @@ class Tiff(Image):
             yield segment
 
 
+@disable_parent_class_sniffing
 class OMETiff(Tiff):
     file_ext = "ome.tiff"
 
-    def sniff_prefix(self, file_prefix: FilePrefix) -> bool:
-        buf = io.BytesIO(file_prefix.contents_header_bytes)
-        with tifffile.TiffFile(buf) as tif:
+    def sniff(self, filename: str) -> bool:
+        raise ValueError('OMETiff.sniff called')
+        with tifffile.TiffFile(filename) as tif:
             return tif.is_ome
 
 
