@@ -300,6 +300,11 @@ class ConditionalDependencies:
     def check_openai(self):
         return self.config.get("openai_api_key", None) is not None
 
+    def check_pydantic_ai(self):
+        return (
+            self.config.get("ai_api_key", None) is not None or self.config.get("inference_services", None) is not None
+        )
+
     def check_weasyprint(self):
         # See notes in ./conditional-requirements.txt for more information.
         return os.environ.get("GALAXY_DEPENDENCIES_INSTALL_WEASYPRINT") == "1"
@@ -307,9 +312,6 @@ class ConditionalDependencies:
     def check_pydyf(self):
         # See notes in ./conditional-requirements.txt for more information.
         return os.environ.get("GALAXY_DEPENDENCIES_INSTALL_WEASYPRINT") == "1"
-
-    def check_custos_sdk(self):
-        return "custos" == self.vault_type
 
     def check_hvac(self):
         return "hashicorp" == self.vault_type
@@ -333,8 +335,14 @@ class ConditionalDependencies:
 
         return celery_enabled and is_redis_url(celery_result_backend) or is_redis_url(celery_broker_url)
 
+    def check_adlfs(self):
+        return "azureflat" in self.file_sources
+
     def check_huggingface_hub(self):
         return "huggingface" in self.file_sources
+
+    def check_omero_py(self):
+        return "omero" in self.file_sources
 
 
 def optional(config_file=None):

@@ -193,7 +193,8 @@ def app_pair(global_conf, load_app_kwds=None, wsgi_preflight=True, **kwargs):
     # The following are routes that are handled completely on the clientside.
     # The following routes don't bootstrap any information, simply provide the
     # base analysis interface at which point the application takes over.
-
+    webapp.add_client_route("/")
+    webapp.add_client_route("/index")
     webapp.add_client_route("/about")
     webapp.add_client_route("/admin")
     webapp.add_client_route("/admin/data_tables")
@@ -233,6 +234,7 @@ def app_pair(global_conf, load_app_kwds=None, wsgi_preflight=True, **kwargs):
     webapp.add_client_route("/workflow_landings/{uuid}")
     webapp.add_client_route("/tours")
     webapp.add_client_route("/tours/{tour_id}")
+    webapp.add_client_route("/chatgxy")
     webapp.add_client_route("/user")
     webapp.add_client_route("/user/notifications{path:.*?}")
     webapp.add_client_route("/user/{form_id}")

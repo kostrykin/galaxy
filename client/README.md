@@ -6,15 +6,15 @@ utilizes `scripts/common_startup.sh`, Galaxy will (since 18.09) _automatically_
 build the client as a part of server startup when it detects changes unless that
 functionality is explicitly disabled.
 
-The base dependencies used are Node.js and Yarn. Galaxy includes appropriate
+The base dependencies used are Node.js and pnpm. Galaxy includes appropriate
 versions of these in the virtual environment, and they can be accessed by
 activating that with `. .venv/bin/activate` from the Galaxy root directory.
 
 If you'd like to install your dependencies external to Galaxy, on OSX the
 easiest way to get set up is using `homebrew` and the command `brew install
-nodejs yarn`. More information, including instructions for other platforms, is
+node pnpm`. More information, including instructions for other platforms, is
 available at [https://nodejs.org](https://nodejs.org) and
-[https://yarnpkg.com/](https://yarnpkg.com).
+[https://pnpm.io/](https://pnpm.io/).
 
 The Galaxy client build has necessarily grown more complex in the past several
 years, but we are still trying to keep things as simple as possible for
@@ -57,10 +57,10 @@ automatically rebuild every time you save a file. You can do this using:
 
 Or, with the package scripts from this `client` directory:
 
-    yarn run develop
+    pnpm run develop
 
-This will start up an extra client development server running on port 8081. Open
-your browser to `http://localhost:8081` (instead of the default 8080 that Galaxy
+This will start up an extra client development server running on port 5173. Open
+your browser to `http://localhost:5173` (instead of the default 8080 that Galaxy
 would run on), and you should see Galaxy like normal. Except now, when you
 change client code it'll automatically rebuild _and_ reload the relevant portion
 of the application for you. Lastly, if you are running Galaxy at a location
@@ -76,7 +76,7 @@ also possible if you set the `CHANGE_ORIGIN` environment variable:
 
 You can also specify a particular port to bind the dev server to:
 
-    WEBPACK_PORT=8083 yarn run develop
+    VITE_PORT=8083 pnpm run develop
 
 ## Running a Separate Server
 
@@ -101,8 +101,8 @@ apply site-wide.
 
 On build, the compiled css bundle is served at `/static/dist/base.css`.
 
-As mentioned above, `make client` will rebuild styles as a part of the webpack
-build. For iterative development, "Watch Mode" rebuilds as described above do
+As mentioned above, `make client` will rebuild styles as a part of the build
+process. For iterative development, "Watch Mode" rebuilds as described above do
 include style changes.
 
 ## Client-Side Unit Testing
@@ -144,25 +144,25 @@ directory. This is what happens during a complete client build.
 
 During client-side development, it is more convenient to have granular testing
 options. The various testing scripts are defined inside package.json within the
-client folder and are called with `yarn` as demonstrated in the following
+client folder and are called with `pnpm` as demonstrated in the following
 commands.
 
 This is what CI is going to run, and also what 'make client-test' invokes,
 executing all the client tests:
 
-     yarn test
+     pnpm test
 
 ##### Watch and rerun unit tests every time a source file changes
 
 This is incredibly handy, and there are a host of options in the interactive
 terminal this starts for executing Vitest tests.
 
-     yarn test:watch
+     pnpm test:watch
 
 ##### Run only specified test files when a source file changes
 
-    yarn test:watch MyModule
+    pnpm test:watch MyModule
 
-    yarn test:watch Dialog
+    pnpm test:watch Dialog
 
-    yarn test:watch workflow/run
+    pnpm test:watch workflow/run
